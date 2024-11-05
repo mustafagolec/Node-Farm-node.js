@@ -1,5 +1,6 @@
 const fs = require('fs'); //file system
 const http = require('http');
+const url = require('url');
 
 ///////////////////////////
 //FILE OPERATIONS
@@ -30,10 +31,32 @@ console.log('Will read file!'); */
 
 ///////////////////////////
 //SERVER
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8'); //We have seperated api code here to prevent load api data every time when user gets to /api route 
+const dataObj = JSON.parse(data); //This code will be executed once when the site loads for the first time.
+
 const server = http.createServer((req, res) => {
-    res.end('Hello from the server!');
+    const pathName = req.url;
+
+    if (pathName === '/' || pathName === '/overview') {
+        res.end('This is the Overview');
+    }
+    else if (pathName === '/product') {
+        res.end('This is the Product');
+    }
+    else if (pathName === '/api') {
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(data);
+    }
+    else {
+        res.writeHead(404, {
+            'Content-type': 'text/html',
+            'my-own-header': 'hello-world'
+        }); //it writes an error code to console (check the console in your browser)
+        res.end('<h1>404: Not Found</h1>');
+    }
 });
 
 server.listen(8000, '127.0.0.1', () => {
-    console.log('Listening to requests on port 8000');
+    console.log('Server is running: 127.0.0.1:8000');
 });
