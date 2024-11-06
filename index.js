@@ -53,10 +53,13 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8'); //We h
 const dataObj = JSON.parse(data); //This code will be executed once when the site loads for the first time.
 
 const server = http.createServer((req, res) => {  //this section is called each time there is a request
-    const pathName = req.url;
+
+    const {query, pathname} = url.parse(req.url, true); 
+
+
 
     //Overview Page
-    if (pathName === '/' || pathName === '/overview') {
+    if (pathname === '/' || pathname === '/overview') {
         res.writeHead(200, { 'content-type': 'text/html' });
 
         const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
@@ -64,10 +67,13 @@ const server = http.createServer((req, res) => {  //this section is called each 
 
         res.end(output);
     }//Product Page
-    else if (pathName === '/product') {
-        res.end('This is the Product');
+    else if (pathname === '/product') {
+        res.writeHead(200, { 'content-type': 'text/html' });
+        const product = dataObj[query.id];
+        const output = replaceTemplate(tempProduct, product);
+        res.end(output);
     }//API
-    else if (pathName === '/api') {
+    else if (pathname === '/api') {
         res.writeHead(200, { 'content-type': 'application/json' });
         res.end(data);
     }//Not found
