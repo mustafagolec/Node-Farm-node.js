@@ -1,9 +1,8 @@
 const fs = require('fs'); //file system
 const http = require('http');
 const url = require('url');
-
+const slugify = require('slugify'); //This is for making urls look better (../product?id=avocados instead of ../product?id=0)
 const replaceTemplate = require('./modules/replaceTemplate'); //We have imported our module "replaceTemplate.js" and the function inside it.
-
 
 ///////////////////////////
 //FILE OPERATIONS
@@ -42,9 +41,13 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8'); //We have seperated api code here to prevent load api data every time when user gets to /api route 
 const dataObj = JSON.parse(data); //This code will be executed once when the site loads for the first time.
 
+const slugs = dataObj.map(el => slugify(el.productName, {lower:true}));
+console.log(slugs);
+
+
 const server = http.createServer((req, res) => {  //this section is called each time there is a request
 
-    const {query, pathname} = url.parse(req.url, true); 
+    const { query, pathname } = url.parse(req.url, true);
 
 
 
